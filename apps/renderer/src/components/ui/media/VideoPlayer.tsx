@@ -156,7 +156,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
             [state, controls, src, variant],
           )}
         >
-          {variant === "preview" && <FloatMutedButton />}
+          {variant === "preview" && state.hasAudio && <FloatMutedButton />}
           {isPlayer && <ControlBar />}
         </VideoPlayerContext.Provider>
       </Focusable>
@@ -344,6 +344,7 @@ const VolumeControl = () => {
   return (
     <ActionIcon
       label={<VolumeSlider onVolumeChange={controls.volume} volume={volume} />}
+      enableHoverableContent
       onClick={() => {
         if (muted) {
           controls.unmute()
@@ -390,9 +391,9 @@ const PlayProgressBar = () => {
         setCurrentDragging(true)
       }}
       onValueChange={(value) => {
-        setDragTime(value[0])
+        setDragTime(value[0]!)
         startTransition(() => {
-          controls.seek(value[0])
+          controls.seek(value[0]!)
         })
       }}
       onValueCommit={() => {
@@ -420,12 +421,14 @@ const ActionIcon = ({
   children,
   shortcut,
   label,
+  enableHoverableContent,
 }: {
   className?: string
   onClick?: () => void
   label: React.ReactNode
   children?: React.ReactNode
   shortcut?: string
+  enableHoverableContent?: boolean
 }) => {
   return (
     <ActionButton
@@ -435,6 +438,7 @@ const ActionIcon = ({
       onClick={onClick}
       tooltip={label}
       shortcut={shortcut}
+      enableHoverableContent={enableHoverableContent}
     >
       {children || <i className={className} />}
     </ActionButton>
