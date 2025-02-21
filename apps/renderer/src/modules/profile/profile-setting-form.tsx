@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
+import { Avatar, AvatarFallback, AvatarImage } from "@follow/components/ui/avatar/index.jsx"
 import { Button } from "@follow/components/ui/button/index.js"
 import {
   Form,
@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@follow/components/ui/form/index.jsx"
 import { Input } from "@follow/components/ui/input/index.js"
+import { updateUser } from "@follow/shared/auth"
 import { cn } from "@follow/utils/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -19,11 +20,10 @@ import { toast } from "sonner"
 import { z } from "zod"
 
 import { setWhoami, useWhoami } from "~/atoms/user"
-import { apiClient } from "~/lib/api-fetch"
 import { toastFetchError } from "~/lib/error-parser"
 
 const formSchema = z.object({
-  handle: z.string().max(50),
+  handle: z.string().max(50).optional(),
   name: z.string().min(3).max(50),
   image: z.string().url(),
 })
@@ -41,16 +41,18 @@ export const ProfileSettingForm = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      handle: user?.handle || "",
+      handle: user?.handle || undefined,
       name: user?.name || "",
       image: user?.image || "",
     },
   })
 
   const updateMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) =>
-      apiClient["auth-app"]["update-account"].$patch({
-        json: values,
+    mutationFn: (values: z.infer<typeof formSchema>) =>
+      updateUser({
+        handle: values.handle,
+        image: values.image,
+        name: values.name,
       }),
     onError: (error) => {
       toastFetchError(error)
@@ -114,6 +116,7 @@ export const ProfileSettingForm = ({
                     {field.value && (
                       <Avatar className="size-9">
                         <AvatarImage src={field.value} />
+                        <AvatarFallback>{user?.name[0] || ""}</AvatarFallback>
                       </Avatar>
                     )}
                   </div>

@@ -1,5 +1,5 @@
 import { EllipsisHorizontalTextWithTooltip } from "@follow/components/ui/typography/index.js"
-import { cn } from "@follow/utils/utils"
+import { clsx, cn } from "@follow/utils/utils"
 import type { FC, MouseEvent } from "react"
 import { memo, useCallback, useRef } from "react"
 
@@ -35,13 +35,15 @@ export const TocItem: FC<TocItemProps> = memo((props) => {
       type="button"
       ref={$ref}
       data-index={index}
-      className={cn("cursor-pointer", isTitleLine && "relative flex min-w-0 flex-col")}
+      className={cn("cursor-pointer", isTitleLine && "relative flex w-full flex-col")}
       style={
         isTitleLine
           ? {
               paddingLeft: `${(depth - rootDepth) * 12}px`,
             }
-          : undefined
+          : {
+              lineHeight: "24px",
+            }
       }
       data-depth={depth}
       onClick={useCallback(
@@ -55,7 +57,14 @@ export const TocItem: FC<TocItemProps> = memo((props) => {
       title={title}
     >
       {isTitleLine && (
-        <EllipsisHorizontalTextWithTooltip className="w-full min-w-0 truncate text-left text-xs text-zinc-500 hover:!text-zinc-500 dark:text-zinc-400 dark:hover:!text-zinc-300">
+        <EllipsisHorizontalTextWithTooltip
+          className={clsx(
+            "w-full min-w-0 truncate text-left text-xs",
+            range
+              ? "text-zinc-900 dark:text-zinc-300"
+              : "text-zinc-500 hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300",
+          )}
+        >
           {title}
         </EllipsisHorizontalTextWithTooltip>
       )}
