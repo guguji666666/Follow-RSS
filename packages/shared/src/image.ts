@@ -1,4 +1,10 @@
+import { env } from "@follow/shared/env"
+
 export const IMAGE_PROXY_URL = "https://webp.follow.is"
+
+export const selfRefererMatches = [env.VITE_OPENPANEL_API_URL, IMAGE_PROXY_URL].filter(
+  Boolean,
+) as string[]
 
 export const imageRefererMatches = [
   {
@@ -19,7 +25,8 @@ export const imageRefererMatches = [
   },
   {
     url: /^https:\/\/sp1\.piokok\.com/,
-    referer: "https://sp1.piokok.com",
+    referer: "https://www.piokok.com",
+    force: true,
   },
 ]
 
@@ -27,6 +34,6 @@ export const webpCloudPublicServicesMatches = [
   // https://docs.webp.se/public-services/github-avatar/
   {
     url: /^https:\/\/avatars\.githubusercontent\.com\/u\//,
-    target: "https://avatars-githubusercontent.webp.se/u/",
+    target: "https://avatars-githubusercontent-webp.webp.se/u/",
   },
 ]

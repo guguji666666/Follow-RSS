@@ -1,3 +1,4 @@
+import { useFeedUnreadIsDirty } from "~/atoms/feed"
 import { useAuthInfiniteQuery, useAuthQuery } from "~/hooks/common"
 import { apiClient } from "~/lib/api-fetch"
 import { defineQuery } from "~/lib/defineQuery"
@@ -13,7 +14,6 @@ export const entries = {
     view,
     read,
     limit,
-    isArchived,
   }: {
     feedId?: number | string
     inboxId?: number | string
@@ -21,7 +21,6 @@ export const entries = {
     view?: number
     read?: boolean
     limit?: number
-    isArchived?: boolean
   }) =>
     defineQuery(
       ["entries", inboxId || listId || feedId, view, read, limit],
@@ -34,11 +33,9 @@ export const entries = {
           read,
           limit,
           pageParam: pageParam as string,
-          isArchived,
         }),
       {
         rootKey: ["entries", inboxId || listId || feedId],
-        structuralSharing: false,
       },
     ),
   byId: (id: string) =>
@@ -46,7 +43,7 @@ export const entries = {
       rootKey: ["entries"],
     }),
   byInboxId: (id: string) =>
-    defineQuery(["entry", id], async () => entryActions.fetchInboxEntryById(id), {
+    defineQuery(["entry", "inbox", id], async () => entryActions.fetchInboxEntryById(id), {
       rootKey: ["entries"],
     }),
   preview: (id: string) =>
@@ -101,8 +98,8 @@ export const entries = {
         }
         return apiClient.entries["check-new"].$get({
           query: {
-            insertedAfter: `${query.insertedAfter}`,
-            view: `${query.view}`,
+            insertedAfter: query.insertedAfter,
+            view: query.view,
             feedId: query.feedId,
             read: typeof query.read === "boolean" ? JSON.stringify(query.read) : undefined,
             feedIdList: query.feedIdList,
@@ -125,31 +122,42 @@ export const entries = {
     ),
 }
 
+const defaultStaleTime = 10 * (60 * 1000) // 10 minutes
+
 export const useEntries = ({
   feedId,
   inboxId,
   listId,
   view,
   read,
-  isArchived,
 }: {
   feedId?: number | string
   inboxId?: number | string
   listId?: number | string
   view?: number
   read?: boolean
-  isArchived?: boolean
-}) =>
-  useAuthInfiniteQuery(entries.entries({ feedId, inboxId, listId, view, read, isArchived }), {
+}) => {
+  const fetchUnread = read === false
+  const feedUnreadDirty = useFeedUnreadIsDirty((feedId as string) || "")
+
+  return useAuthInfiniteQuery(entries.entries({ feedId, inboxId, listId, view, read }), {
     enabled: feedId !== undefined || inboxId !== undefined || listId !== undefined,
     getNextPageParam: (lastPage) =>
-      inboxId || listId
+      listId
         ? lastPage.data?.at(-1)?.entries.insertedAt
         : lastPage.data?.at(-1)?.entries.publishedAt,
     initialPageParam: undefined,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
+    // DON'T refetch when the router is pop to previous page
+    refetchOnMount: fetchUnread && feedUnreadDirty && !history.isPop ? "always" : false,
+
+    staleTime:
+      // Force refetch unread entries when feed is dirty
+      // HACK: disable refetch when the router is pop to previous page
+      history.isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
   })
+}
 
 export const useEntriesPreview = ({ id }: { id?: string }) =>
   useAuthQuery(entries.preview(id!), {

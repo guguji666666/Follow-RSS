@@ -1,23 +1,45 @@
 import type { FeedViewType } from "@follow/constants"
 import type { ListModel } from "@follow/models/types"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 
 import { useWhoami } from "~/atoms/user"
 
 import { useListStore } from "./store"
 
-export const useListById = (listId: Nullable<string>): ListModel | null =>
-  useListStore((state) => (listId ? state.lists[listId] : null))
+const defaultSelector = (list) => list
+export function useListById<T>(listId: Nullable<string>, selector: (list: ListModel) => T): T | null
+export function useListById(listId: Nullable<string>): ListModel | null
 
-export const useListByView = (view: FeedViewType) => {
-  return useListStore((state) => Object.values(state.lists).filter((list) => list.view === view))
+export function useListById<T>(
+  listId: Nullable<string>,
+  selector: (list: ListModel) => T = defaultSelector,
+): T | null {
+  return useListStore((state) =>
+    listId && state.lists[listId] ? selector(state.lists[listId]) : null,
+  )
 }
 
-export const useOwnedList = (view: FeedViewType) => {
+export const useListByView = (view: FeedViewType) => {
+  return useListStore(
+    useCallback((state) => Object.values(state.lists).filter((list) => list.view === view), [view]),
+  )
+}
+
+export const useOwnedListByView = (view: FeedViewType) => {
   const whoami = useWhoami()
   const viewLists = useListByView(view)
   return useMemo(
     () => viewLists.filter((list) => list.ownerUserId === whoami?.id),
     [viewLists, whoami],
+  )
+}
+
+export const useOwnedLists = () => {
+  const whoami = useWhoami()
+  return useListStore(
+    useCallback(
+      (state) => Object.values(state.lists).filter((list) => list.ownerUserId === whoami?.id),
+      [whoami?.id],
+    ),
   )
 }
