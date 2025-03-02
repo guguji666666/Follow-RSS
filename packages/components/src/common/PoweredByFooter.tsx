@@ -1,5 +1,4 @@
 import { cn } from "@follow/utils/utils"
-import pkg from "@pkg"
 
 import { Logo } from "../icons/logo"
 
@@ -8,8 +7,8 @@ export const PoweredByFooter: Component = ({ className }) => (
     <span className="text-xs opacity-80">{new Date().getFullYear()}</span>{" "}
     <Logo className="size-5" />{" "}
     <a
-      href={pkg.homepage}
-      className="cursor-pointer font-default font-bold text-accent no-underline"
+      href="https://github.com/RSSNext"
+      className="font-default text-accent cursor-pointer font-bold no-underline"
       target="_blank"
       rel="noreferrer"
     >

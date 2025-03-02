@@ -1,6 +1,5 @@
 {
   "name": "@follow/hooks",
-  "version": "0.0.1",
   "private": true,
   "sideEffects": false,
   "exports": {
@@ -9,17 +8,16 @@
       "require": "./src/index.js"
     }
   },
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+  "main": "./exports.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@follow/shared": "workspace:*",
     "@follow/types": "workspace:*",
     "@follow/utils": "workspace:*",
-    "foxact": "0.2.39",
-    "jotai": "2.10.1",
-    "lodash-es": "4.17.21",
-    "usehooks-ts": "3.1.0"
+    "foxact": "0.2.44",
+    "jotai": "2.12.1",
+    "usehooks-ts": "3.1.1"
   }
 }

@@ -1,3 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "apps/desktop/*"
+  - "apps/desktop/src/*"
+  - "apps/mobile/native"
+  - "apps/mobile/web-app"
+  - "!**/example"
+  - "!**/example/*"

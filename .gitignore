@@ -20,3 +20,9 @@ vite.config.*.mjs
 
 .generated
 .turbo
+
+apps/desktop/src/renderer/dev-dist
+tsconfig.tsbuildinfo
+
+apps/mobile/ios
+apps/mobile/android
