@@ -295,7 +295,7 @@ export const InternalNavigationHeader = ({
       )}
     >
       <Animated.View style={blurStyle} pointerEvents={"none"}>
-        <ThemedBlurView className="flex-1" />
+        <ThemedBlurView style={StyleSheet.absoluteFill} />
       </Animated.View>
 
       {/* Grid */}
