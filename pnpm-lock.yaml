@@ -1452,6 +1452,9 @@ importers:
       babel-plugin-inline-import:
         specifier: 3.0.0
         version: 3.0.0
+      babel-preset-expo:
+        specifier: 57.0.2
+        version: 57.0.2(@babel/core@7.29.0)(@babel/runtime@7.29.7)(expo@57.0.4)(react-refresh@0.14.2)
       expo-drizzle-studio-plugin:
         specifier: 0.2.1
         version: 0.2.1(expo-sqlite@57.0.0(expo@57.0.4)(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7))(expo@57.0.4)

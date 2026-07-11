@@ -155,6 +155,7 @@
     "@tailwindcss/typography": "0.5.20",
     "@types/react": "19.2.17",
     "babel-plugin-inline-import": "3.0.0",
+    "babel-preset-expo": "57.0.2",
     "expo-drizzle-studio-plugin": "0.2.1",
     "nbump": "2.1.8",
     "pathe": "2.0.3",
