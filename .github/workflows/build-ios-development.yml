@@ -5,10 +5,13 @@ on:
     branches:
       - "**"
     paths:
+      - ".github/actions/setup-xcode/**"
+      - ".github/workflows/build-ios-development.yml"
       - "apps/mobile/web-app/**"
       - "apps/mobile/native/**"
       - "apps/mobile/package.json"
       - "apps/mobile/app.config.ts"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

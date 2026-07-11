@@ -5,6 +5,8 @@ on:
     branches:
       - "**"
     paths:
+      - ".github/actions/setup-xcode/**"
+      - ".github/workflows/build-ios.yml"
       - "apps/mobile/**"
       - "pnpm-lock.yaml"
   workflow_dispatch:
