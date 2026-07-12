@@ -52,6 +52,7 @@ const refreshSessionQueries = () =>
     queryClient.resetQueries({ queryKey: ["subscription"] }),
     queryClient.resetQueries({ queryKey: ["unread"] }),
     queryClient.resetQueries({ queryKey: ["owned", "lists"] }),
+    queryClient.resetQueries({ queryKey: ["action", "rules"] }),
   ])
 
 type MobileAuthPlugins = [
