@@ -1,14 +1,11 @@
 # What's New in vNEXT_VERSION
 
-## Improvements
+## Shiny new things
 
-- Upgraded the app to Expo SDK 57, React Native 0.86, and updated native integrations
+## Improvements
 
 ## No longer broken
 
-- Fixed social sign-in callbacks and legacy session migration using the Folo app scheme
-- Fixed signed-out launches not opening the login screen
-- Fixed two-factor authentication cookies being dropped during session updates
-- Fixed push notification registration after sign-in, including retries and token refreshes
-- Fixed the timeline view selector overflowing on narrow screens
-- Restored the header background after scrolling
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions
