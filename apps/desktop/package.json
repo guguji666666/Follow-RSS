@@ -1,7 +1,7 @@
 {
   "name": "Folo",
   "type": "module",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "private": true,
   "description": "Follow everything in one place",
   "author": "Folo Team",
@@ -99,7 +99,7 @@
     "workbox-build": "7.4.1",
     "workbox-window": "7.4.1"
   },
-  "runtimeVersion": "1.9.0",
+  "runtimeVersion": "1.11.0",
   "productName": "Folo",
-  "mainHash": "79b9a1c73ebea4fc92b28cc4952a2fe92557557141b1de0c81074622d8a1f404"
+  "mainHash": "b672f321b6478cbaad0ad6e354d73ca3c8a79f90aaadb41c119499639ec66e87"
 }
