@@ -1,8 +1,8 @@
 # What's new in vNEXT_VERSION
 
-## Shiny new things
-
 ## Improvements
+
+- Upgraded the desktop runtime to Electron 43 and refreshed core dependencies
 
 ## No longer broken
 
@@ -10,4 +10,4 @@
 
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributor @TonyRL for the YouTube embed fix
