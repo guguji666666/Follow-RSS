@@ -1,13 +1,11 @@
 # What's new in vNEXT_VERSION
 
-## Improvements
+## Shiny new things
 
-- Upgraded the desktop runtime to Electron 43 and refreshed core dependencies
+## Improvements
 
 ## No longer broken
 
-- Fixed YouTube embeds in entry content and readability view failing to play due to a missing referrer
-
 ## Thanks
 
-Special thanks to volunteer contributor @TonyRL for the YouTube embed fix
+Special thanks to volunteer contributors @ for their valuable contributions
