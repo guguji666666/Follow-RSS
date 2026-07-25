@@ -38,6 +38,7 @@
     "./client/**/*.tsx",
     "./types/**/*.d.ts",
     "vite.config.mts",
+    "vitest.config.ts",
     "./tailwind.config.ts",
     "./helper/**/*.ts"
   ],
