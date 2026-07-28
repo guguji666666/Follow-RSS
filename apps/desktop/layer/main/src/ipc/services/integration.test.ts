@@ -82,9 +82,7 @@ describe("IntegrationService", () => {
     it("rejects input that cannot be parsed as a URL", async () => {
       const service = new IntegrationService()
 
-      await expect(service.openURLScheme("not-a-url")).rejects.toThrow(
-        /Invalid URL scheme/i,
-      )
+      await expect(service.openURLScheme("not-a-url")).rejects.toThrow(/Invalid URL scheme/i)
       expect(openExternalMock).not.toHaveBeenCalled()
     })
 
