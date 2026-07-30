@@ -14,6 +14,12 @@ import { proxyEnv } from "@/src/lib/proxy-env"
 import { queryClient } from "@/src/lib/query-client"
 import { toast } from "@/src/lib/toast"
 
+import {
+  buildAppleVerificationRequest,
+  isKnownAppleSubscriptionPurchase,
+  selectSignedTransactionInfo,
+} from "./apple-iap-purchase"
+
 const billingSubscriptionQueryKey = ["billingSubscription"]
 
 type BillingSubscriptionResponse = {
@@ -123,16 +129,23 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
 
   const verifyPurchase = useCallback(
     async (purchase: Purchase) => {
-      const productId = purchase.id
-      const jwsRepresentation =
-        purchase.purchaseToken ||
-        (await getTransactionJwsIOS(productId).catch(() => null)) ||
-        (await validateReceipt({ apple: { sku: productId } })
-          .then((result) => ("jwsRepresentation" in result ? result.jwsRepresentation : undefined))
-          .catch(() => {}))
+      const productId = purchase.productId
+      let signedTransactionInfo = selectSignedTransactionInfo(purchase.purchaseToken)
 
-      if (!jwsRepresentation) {
-        throw new Error(t("subscription.actions.upgrade_error"))
+      if (!signedTransactionInfo) {
+        signedTransactionInfo = selectSignedTransactionInfo(
+          await getTransactionJwsIOS(productId).catch(() => null),
+        )
+      }
+
+      if (!signedTransactionInfo) {
+        signedTransactionInfo = selectSignedTransactionInfo(
+          await validateReceipt({ apple: { sku: productId } })
+            .then((result) =>
+              "jwsRepresentation" in result ? result.jwsRepresentation : undefined,
+            )
+            .catch(() => undefined),
+        )
       }
 
       const response = await followClient.request<{
@@ -140,23 +153,21 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
         data: BillingSubscriptionResponse
       }>("/billing/apple/verify", {
         method: "POST",
-        body: {
-          signedTransactionInfo: jwsRepresentation,
-        },
+        body: buildAppleVerificationRequest(purchase, signedTransactionInfo),
       })
 
       if (response.code !== 0) {
         throw new Error("Failed to verify Apple subscription")
       }
     },
-    [t, validateReceipt],
+    [validateReceipt],
   )
 
   useEffect(() => {
     if (
       Platform.OS !== "ios" ||
       !currentPurchase ||
-      !knownSubscriptionIds.has(currentPurchase.id)
+      !isKnownAppleSubscriptionPurchase(currentPurchase, knownSubscriptionIds)
     ) {
       return
     }
@@ -280,7 +291,7 @@ export const AppleIAPProvider = ({ children }: PropsWithChildren) => {
       await new Promise((resolve) => setTimeout(resolve, 300))
 
       const restoredPurchases = availablePurchasesRef.current.filter((purchase) =>
-        knownSubscriptionIds.has(purchase.id),
+        isKnownAppleSubscriptionPurchase(purchase, knownSubscriptionIds),
       )
 
       if (restoredPurchases.length === 0) {
