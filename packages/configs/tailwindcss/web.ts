@@ -46,7 +46,8 @@ const twConfig = {
       },
 
       colors: {
-        border: "hsl(var(--border) / <alpha-value>)",
+        // DaisyUI 5 reserves --border for border width, so keep the color token namespaced.
+        border: "hsl(var(--fo-border) / <alpha-value>)",
         background: "hsl(var(--background) / <alpha-value>)",
 
         accent: "hsl(var(--fo-a) / <alpha-value>)",

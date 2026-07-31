@@ -1,6 +1,6 @@
 {
   "name": "@follow/mobile",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "private": true,
   "main": "src/main.tsx",
   "scripts": {
@@ -135,7 +135,7 @@
     "react-native-sheet-transitions": "0.1.2",
     "react-native-svg": "15.15.5",
     "react-native-track-player": "4.1.2",
-    "react-native-uikit-colors": "1.0.0",
+    "react-native-uikit-colors": "0.6.2",
     "react-native-volume-manager": "2.0.8",
     "react-native-web": "0.21.2",
     "react-native-webview": "14.0.1",
