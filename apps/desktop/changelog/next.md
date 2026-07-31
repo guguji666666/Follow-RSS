@@ -1,11 +1,17 @@
 # What's new in vNEXT_VERSION
 
-## Shiny new things
-
 ## Improvements
+
+- Hardened custom URL integrations so only trusted protocols can be opened
+- Improved the error shown when an RSSHub subscription limit is reached
 
 ## No longer broken
 
+- Fixed share popovers remaining open after completing an action
+- Fixed plan upgrades for past-due Stripe subscriptions
+- Restored category chevron rotation
+- Restored correct border styling across the app
+
 ## Thanks
 
-Special thanks to volunteer contributors @ for their valuable contributions
+Special thanks to volunteer contributor @sebastionoss for hardening custom URL integrations
