@@ -1,12 +1,11 @@
 # What's New in vNEXT_VERSION
 
-## Improvements
+## Shiny new things
 
-- Improved RSSHub subscription-limit errors with localized upgrade guidance and without internal request details
+## Improvements
 
 ## No longer broken
 
-- Fixed Apple subscription purchases and restores failing when product and transaction identifiers were confused
-- Fixed upgrades for active or past-due Stripe subscribers by opening billing management
-- Restored readable text colors in dark mode
-- Fixed border styling in web-rendered content affected by a shared CSS token collision
+## Thanks
+
+Special thanks to volunteer contributors @ for their valuable contributions
