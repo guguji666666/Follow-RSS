@@ -1,11 +1,5 @@
 # What's New in vNEXT_VERSION
 
-## Shiny new things
-
 ## Improvements
 
-## No longer broken
-
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Updated Android photo selection and saving to use system pickers and request only the permissions required
