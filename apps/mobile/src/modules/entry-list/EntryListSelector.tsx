@@ -4,7 +4,7 @@ import type { FlashListRef } from "@shopify/flash-list"
 import type { RefObject } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { useGeneralSettingKey } from "@/src/atoms/settings/general"
+import { useEffectiveEntrySortOrder, useGeneralSettingKey } from "@/src/atoms/settings/general"
 import { withErrorBoundary } from "@/src/components/common/ErrorBoundary"
 import { NoLoginInfo } from "@/src/components/common/NoLoginInfo"
 import { ListErrorView } from "@/src/components/errors/ListErrorView"
@@ -13,7 +13,7 @@ import { useNavigation } from "@/src/lib/navigation/hooks"
 import { EntryListContentPicture } from "@/src/modules/entry-list/EntryListContentPicture"
 import { EntryDetailScreen } from "@/src/screens/(stack)/entries/[entryId]/EntryDetailScreen"
 
-import { useEntries, useEntryListContext } from "../screen/atoms"
+import { useEntries, useEntryListContext, useIsTimelineEntrySource } from "../screen/atoms"
 import { shouldSuspendMarkReadForScrollReset } from "../screen/scroll-reset"
 import { EntryListContentArticle } from "./EntryListContentArticle"
 import { EntryListContentSocial } from "./EntryListContentSocial"
@@ -78,9 +78,11 @@ function EntryListSelectorImpl({ entryIds, viewId, active = true }: EntryListSel
   }
 
   const unreadOnly = useGeneralSettingKey("unreadOnly")
+  const isTimelineSource = useIsTimelineEntrySource()
+  const sortOrder = useEffectiveEntrySortOrder({ isTimelineSource })
   useEffect(() => {
     requestScrollToTop()
-  }, [requestScrollToTop, unreadOnly])
+  }, [requestScrollToTop, sortOrder, unreadOnly])
 
   const { isReady } = useEntries({ viewId, active })
   const hasResetAfterReadyRef = useRef(false)

@@ -18,6 +18,7 @@ import {
 } from "./getter"
 import { entrySyncServices, useEntryStore } from "./store"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
+import { getEffectiveEntrySortOrder, isTimelineEntriesSource } from "./utils"
 
 export const invalidateEntriesQuery = ({
   views,
@@ -71,10 +72,16 @@ export const useEntriesQuery = (
     unreadOnly,
     hidePrivateSubscriptionsInTimeline,
     aiSort,
+    sortOrder,
   } = props || {}
 
   const fetchUnread = unreadOnly
   const feedUnreadDirty = useFeedUnreadIsDirty((feedId as string) || "")
+  const effectiveSortOrder = getEffectiveEntrySortOrder({
+    sortOrder: aiSort ? "desc" : sortOrder,
+    unreadOnly: unreadOnly === true,
+    isTimelineSource: isTimelineEntriesSource({ feedId, inboxId, isCollection }),
+  })
 
   const isPop =
     "history" in globalThis && "isPop" in globalThis.history && !!globalThis.history.isPop
@@ -92,6 +99,7 @@ export const useEntriesQuery = (
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
       aiSort,
+      effectiveSortOrder,
     ],
     [
       feedId,
@@ -104,6 +112,7 @@ export const useEntriesQuery = (
       unreadOnly,
       hidePrivateSubscriptionsInTimeline,
       aiSort,
+      effectiveSortOrder,
     ],
   )
 
@@ -116,6 +125,7 @@ export const useEntriesQuery = (
         pageParam,
         read: unreadOnly ? false : undefined,
         excludePrivate: hidePrivateSubscriptionsInTimeline,
+        sortOrder: effectiveSortOrder,
       }),
 
     getNextPageParam: (lastPage) => {
