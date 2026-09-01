@@ -56,6 +56,9 @@ const toPageParam = (value: Date | string | null | undefined) => {
 export const useEntriesQuery = (
   props?: Omit<FetchEntriesProps, "pageParam" | "read" | "excludePrivate"> &
     FetchEntriesPropsSettings,
+  options?: {
+    subscribed?: boolean
+  },
 ) => {
   const {
     feedId,
@@ -135,6 +138,7 @@ export const useEntriesQuery = (
       // HACK: disable refetch when the router is pop to previous page
       isPop ? Infinity : fetchUnread && feedUnreadDirty ? 0 : defaultStaleTime,
     enabled: !!props,
+    subscribed: options?.subscribed,
   })
   const { fetchNextPage: queryFetchNextPage } = query
   const fetchNextPage = useCallback(

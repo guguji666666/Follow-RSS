@@ -16,7 +16,10 @@ import DeviceInfo from "react-native-device-info"
 
 import { getDbPath } from "@/src/database"
 
-import { createMobileAuthCookieSyncPlugin } from "./auth-cookie-sync"
+import {
+  createMobileAuthCookieSyncPlugin,
+  createSessionAwareAuthCookieStorage,
+} from "./auth-cookie-sync"
 import { getClientId, getSessionId } from "./client-session"
 import { getUserAgent } from "./native/user-agent"
 import { Navigation } from "./navigation/Navigation"
@@ -64,9 +67,8 @@ type MobileAuthClientOptions = Omit<BetterAuthClientOptions, "plugins"> & {
   plugins: MobileAuthPlugins
 }
 
-const authCookieStorage = {
+const secureAuthCookieStorage = {
   setItem(key: string, value: string) {
-    const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
     try {
       safeSecureStore.setItem(key, value)
     } catch (e) {
@@ -83,11 +85,6 @@ const authCookieStorage = {
           // Keychain may be unavailable in background
         }
       }
-      bumpAuthStateRevision()
-      const authStateChanged = previousValue !== value
-      if (authStateChanged) {
-        void refreshSessionQueries()
-      }
     }
   },
   getItem(key: string) {
@@ -99,7 +96,6 @@ const authCookieStorage = {
     }
   },
   removeItem(key: string) {
-    const previousValue = key === cookieKey ? safeSecureStore.getItem(key) : null
     try {
       safeSecureStore.removeItem(key)
     } catch (e) {
@@ -112,13 +108,18 @@ const authCookieStorage = {
         const env = getEnvProfile()
         safeSecureStore.removeItem(`${cookieKey}_${env}`)
       }
-      bumpAuthStateRevision()
-      if (previousValue) {
-        void refreshSessionQueries()
-      }
     }
   },
 }
+
+const authCookieStorage = createSessionAwareAuthCookieStorage({
+  cookieKey,
+  storage: secureAuthCookieStorage,
+  onSessionChange() {
+    bumpAuthStateRevision()
+    void refreshSessionQueries()
+  },
+})
 
 const plugins = [
   ...baseAuthPlugins,

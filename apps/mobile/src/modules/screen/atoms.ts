@@ -167,7 +167,9 @@ function useRemoteEntries(props?: UseEntriesProps): UseEntriesReturn {
   )
   const options = useFetchEntriesSettings()
 
-  const query = useEntriesQuery(props?.active ? { ...payload, ...options } : undefined)
+  const query = useEntriesQuery(payload ? { ...payload, ...options } : undefined, {
+    subscribed: props?.active !== false,
+  })
 
   const [fetchedTime, setFetchedTime] = useState<number>()
   useEffect(() => {
