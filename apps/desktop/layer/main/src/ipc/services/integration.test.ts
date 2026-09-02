@@ -1,7 +1,7 @@
 import fsp from "node:fs/promises"
 import os from "node:os"
 
-import { shell } from "electron"
+import { dialog, shell } from "electron"
 import path from "pathe"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -13,6 +13,9 @@ vi.mock("electron", () => ({
   },
   shell: {
     openExternal: vi.fn(),
+  },
+  dialog: {
+    showMessageBox: vi.fn(),
   },
 }))
 
@@ -73,10 +76,13 @@ describe("IntegrationService", () => {
 
   describe("openURLScheme", () => {
     const openExternalMock = vi.mocked(shell.openExternal)
+    const showMessageBoxMock = vi.mocked(dialog.showMessageBox)
 
     beforeEach(() => {
       openExternalMock.mockReset()
       openExternalMock.mockResolvedValue()
+      showMessageBoxMock.mockReset()
+      showMessageBoxMock.mockResolvedValue({ checkboxChecked: false, response: 0 })
     })
 
     it("rejects input that cannot be parsed as a URL", async () => {
@@ -110,6 +116,7 @@ describe("IntegrationService", () => {
         await expect(service.openURLScheme(dangerousScheme)).rejects.toThrow(
           /not allowed|disallowed|not permitted/i,
         )
+        expect(showMessageBoxMock).not.toHaveBeenCalled()
         expect(openExternalMock).not.toHaveBeenCalled()
       },
     )
@@ -133,7 +140,32 @@ describe("IntegrationService", () => {
       await expect(service.openURLScheme(allowedScheme)).resolves.toEqual({
         success: true,
       })
+      expect(showMessageBoxMock).not.toHaveBeenCalled()
       expect(openExternalMock).toHaveBeenCalledWith(allowedScheme)
+    })
+
+    it.each([
+      ["logseq://x-callback-url/open?title=Test"],
+      ["my-app+folo.v2://open?title=Test"],
+      ["MYAPP://open"],
+      ["file-helper://open"],
+    ])("permits user-defined integration scheme %s", async (customScheme) => {
+      const service = new IntegrationService()
+
+      await expect(service.openURLScheme(customScheme)).resolves.toEqual({
+        success: true,
+      })
+      expect(showMessageBoxMock).toHaveBeenCalledOnce()
+      expect(openExternalMock).toHaveBeenCalledWith(customScheme)
+    })
+
+    it("does not open a user-defined integration scheme when confirmation is canceled", async () => {
+      showMessageBoxMock.mockResolvedValue({ checkboxChecked: false, response: 1 })
+      const service = new IntegrationService()
+
+      await expect(service.openURLScheme("logseq://open")).rejects.toThrow(/not opened/i)
+      expect(showMessageBoxMock).toHaveBeenCalledOnce()
+      expect(openExternalMock).not.toHaveBeenCalled()
     })
   })
 })

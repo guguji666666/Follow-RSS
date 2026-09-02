@@ -24,7 +24,7 @@ import type {
 import { userActions } from "../user/store"
 import { getEntry } from "./getter"
 import type { EntryModel, FetchEntriesProps, FetchEntriesPropsSettings } from "./types"
-import { getEntriesParams } from "./utils"
+import { getEffectiveEntrySortOrder, getEntriesParams, isTimelineEntriesSource } from "./utils"
 
 type EntryId = string
 type FeedId = string
@@ -535,6 +535,7 @@ class EntrySyncServices {
       feedIdList,
       excludePrivate,
       aiSort,
+      sortOrder,
     } = props
     const params = getEntriesParams({
       feedId,
@@ -542,6 +543,15 @@ class EntrySyncServices {
       listId,
       view,
       feedIdList,
+    })
+    const effectiveSortOrder = getEffectiveEntrySortOrder({
+      sortOrder: aiSort ? "desc" : sortOrder,
+      unreadOnly: read === false,
+      isTimelineSource: isTimelineEntriesSource({
+        feedId,
+        inboxId: params.inboxId,
+        isCollection: isCollection === true || params.isCollection === true,
+      }),
     })
 
     const res = params.inboxId
@@ -556,12 +566,15 @@ class EntrySyncServices {
         })
       : await api().entries.list(
           {
-            publishedAfter: pageParam,
+            ...(effectiveSortOrder === "asc"
+              ? { publishedBefore: pageParam }
+              : { publishedAfter: pageParam }),
             read,
             limit,
             isCollection,
             excludePrivate,
             ...(aiSort && { aiSort }),
+            ...(effectiveSortOrder && { sortOrder: effectiveSortOrder }),
             ...params,
           },
           aiSort
