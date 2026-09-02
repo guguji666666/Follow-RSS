@@ -2,17 +2,10 @@
 
 ## Shiny new things
 
-- Unread timelines can now be sorted oldest first
-- Linux builds now include a `.deb` package alongside the AppImage
-
 ## Improvements
-
-- Custom URL integrations can now open additional app schemes after confirmation
 
 ## No longer broken
 
-- Fixed copying masked inbox secrets
-
 ## Thanks
 
-Special thanks to volunteer contributor @jing2uo for adding Linux `.deb` packaging
+Special thanks to volunteer contributors @ for their valuable contributions
