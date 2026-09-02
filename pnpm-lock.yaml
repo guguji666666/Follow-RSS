@@ -71,9 +71,6 @@ patchedDependencies:
   react-native-sheet-transitions:
     hash: 4db5ed53b31f4349d609d7dd2d0e053b6ee4c27e8d6d72c90ee74015ae18235f
     path: patches/react-native-sheet-transitions.patch
-  react-native-track-player@4.1.2:
-    hash: dc51df1dccb62feafc2369115ba8e02dba9b261d9cf397f4db6c57d6b4acefe5
-    path: patches/react-native-track-player@4.1.2.patch
   workbox-precaching:
     hash: 51e57c78af317e292b43fca4b72f57b247b7b1a1faa8b03c8881ddb798c7c52f
     path: patches/workbox-precaching.patch
@@ -1148,6 +1145,9 @@ importers:
       '@react-native-picker/picker':
         specifier: 2.11.4
         version: 2.11.4(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)
+      '@rntp/player':
+        specifier: 5.9.2
+        version: 5.9.2(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)
       '@shikijs/themes':
         specifier: 4.3.1
         version: 4.3.1
@@ -1397,9 +1397,6 @@ importers:
       react-native-svg:
         specifier: 15.15.5
         version: 15.15.5(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)
-      react-native-track-player:
-        specifier: 4.1.2
-        version: 4.1.2(patch_hash=dc51df1dccb62feafc2369115ba8e02dba9b261d9cf397f4db6c57d6b4acefe5)(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)
       react-native-uikit-colors:
         specifier: 0.6.2
         version: 0.6.2(nativewind@4.2.6(fae4c8694d5ef169f465873e7969eb18))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.15.43(@swc/helpers@0.5.18))(@types/node@26.1.1)(typescript@6.0.3)))
@@ -8620,6 +8617,16 @@ packages:
   '@reteps/dockerfmt@0.3.6':
     resolution: {integrity: sha512-Tb5wIMvBf/nLejTQ61krK644/CEMB/cpiaIFXqGApfGqO3GwcR3qnI0DbmkFVCl2OyEp8LnLX3EkucoL0+tbFg==}
     engines: {node: ^v12.20.0 || ^14.13.0 || >=16.0.0}
+
+  '@rntp/player@5.9.2':
+    resolution: {integrity: sha512-BckAAXu412xR6jWhZAG3aGS8qyFam0ZMmf3bnaeoi9YAUzVoa9gHWjMUEq3SzVs/udbn1wBoVep+/K0NjrTrCg==}
+    peerDependencies:
+      react: 19.2.7
+      react-native: '*'
+      shaka-player: '>=4.12.0'
+    peerDependenciesMeta:
+      shaka-player:
+        optional: true
 
   '@rolldown/binding-android-arm64@1.1.5':
     resolution: {integrity: sha512-lZg8fqIv2v7FF237bwMgzGZEJvGL79/s5knJ/i6FmsGF4XXlzccZ4jb+TrFIxtSSxFtIpdsgrPZeMk1I9AFcyQ==}
@@ -16958,19 +16965,6 @@ packages:
     peerDependencies:
       react: 19.2.7
       react-native: '*'
-
-  react-native-track-player@4.1.2:
-    resolution: {integrity: sha512-cIgMlqVJx/95hirUWPRW8CHxiBFj9Rjl/voKHh2jF/2URYMTQyt76t/m2FKvjeYUW2doKv4QSCBIOUmtyDLtJw==}
-    peerDependencies:
-      react: 19.2.7
-      react-native: '>=0.60.0-rc.2'
-      react-native-windows: '>=0.63.0'
-      shaka-player: ^4.7.9
-    peerDependenciesMeta:
-      react-native-windows:
-        optional: true
-      shaka-player:
-        optional: true
 
   react-native-uikit-colors@0.6.2:
     resolution: {integrity: sha512-qcsQOb/0+3eoYPS/pJG8R5Idxnk+o/UKPwTfa4wCxJ/gFJEcShm1q0wsw9D7BgceXo8tK+aMDebeguvNJYt6Og==}
@@ -27619,6 +27613,11 @@ snapshots:
 
   '@reteps/dockerfmt@0.3.6': {}
 
+  '@rntp/player@5.9.2(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)':
+    dependencies:
+      react: 19.2.7
+      react-native: 0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7)
+
   '@rolldown/binding-android-arm64@1.1.5':
     optional: true
 
@@ -37474,11 +37473,6 @@ snapshots:
       react: 19.2.7
       react-native: 0.86.0(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7)
     optional: true
-
-  react-native-track-player@4.1.2(patch_hash=dc51df1dccb62feafc2369115ba8e02dba9b261d9cf397f4db6c57d6b4acefe5)(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7):
-    dependencies:
-      react: 19.2.7
-      react-native: 0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7)
 
   react-native-uikit-colors@0.6.2(nativewind@4.2.6(fae4c8694d5ef169f465873e7969eb18))(react-native@0.86.0(@babel/core@7.29.0)(@react-native/metro-config@0.86.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.7))(react@19.2.7)(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.15.43(@swc/helpers@0.5.18))(@types/node@26.1.1)(typescript@6.0.3))):
     dependencies:

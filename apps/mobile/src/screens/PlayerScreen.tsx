@@ -25,7 +25,7 @@ import { usePrefetchImageColors } from "../store/image/hooks"
 function CoverArt({ cover }: { cover?: string }) {
   const scale = useSharedValue(1)
   const ttsStream = useTtsStreamPlayback()
-  const { playing } = useIsPlaying()
+  const playing = useIsPlaying()
   const isPlaying = ttsStream.entryId ? ttsStream.status === "playing" : playing
   useEffect(() => {
     cancelAnimation(scale)

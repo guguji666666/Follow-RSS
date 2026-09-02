@@ -37,7 +37,7 @@ type ControlButtonProps = {
 }
 export function PlayPauseButton({ size = 24, className, color }: ControlButtonProps) {
   const ttsStream = useTtsStreamPlayback()
-  const { playing } = useIsPlaying()
+  const playing = useIsPlaying()
   const isStreamPlaying = ttsStream.status === "playing"
   const isStream = !!ttsStream.entryId
   const label = useColor("label")
@@ -194,7 +194,7 @@ const formatSecondsToMinutes = (seconds: number) => {
 }
 export function ProgressBar() {
   const { isBackgroundLight } = usePlayerScreenContext()
-  const { duration, position } = useProgress(250)
+  const { duration, position } = useProgress(0.25)
   const isSliding = useSharedValue(false)
   const progress = useDerivedValue(() => {
     return duration > 0 ? position / duration : 0
