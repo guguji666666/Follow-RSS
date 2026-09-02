@@ -1,10 +1,11 @@
 import { existsSync } from "node:fs"
 import fsp from "node:fs/promises"
 
-import { shell } from "electron"
+import { dialog, shell } from "electron"
 import { IpcMethod, IpcService } from "electron-ipc-decorator"
 import path from "pathe"
 
+import { t } from "~/lib/i18n"
 import { store } from "~/lib/store"
 import { logger } from "~/logger"
 
@@ -81,14 +82,7 @@ export async function saveMediaToEagle(input: SaveToEagleInput): Promise<any> {
   }
 }
 
-// Allowlist of URL scheme protocols that `openURLScheme` is permitted to hand
-// off to `shell.openExternal`. The list intentionally covers the integrations
-// shipped in the UI (Obsidian, Bear, Drafts, Things, Notion, DEVONthink) plus
-// generic web/mail schemes, while excluding dangerous protocols such as
-// `file:`, `smb:`, `ms-msdt:`, `search-ms:`, `jar:`, `res:`, `javascript:`,
-// `data:`, `vbscript:`, which have known abuse chains when invoked from
-// untrusted content.
-const ALLOWED_URL_SCHEME_PROTOCOLS = new Set<string>([
+const BUILT_IN_URL_SCHEME_PROTOCOLS = new Set<string>([
   "http",
   "https",
   "mailto",
@@ -100,8 +94,39 @@ const ALLOWED_URL_SCHEME_PROTOCOLS = new Set<string>([
   "x-devonthink",
 ])
 
-function isAllowedURLSchemeProtocol(protocol: string): boolean {
-  return ALLOWED_URL_SCHEME_PROTOCOLS.has(protocol)
+// Protocols that must never be handed to `shell.openExternal`, even after user
+// confirmation. Matches are exact so custom protocols such as `file-helper`
+// remain usable.
+const DISALLOWED_URL_SCHEME_PROTOCOLS = new Set<string>([
+  "data",
+  "file",
+  "jar",
+  "javascript",
+  "ms-msdt",
+  "res",
+  "search-ms",
+  "smb",
+  "vbscript",
+])
+
+function isDisallowedURLSchemeProtocol(protocol: string): boolean {
+  return DISALLOWED_URL_SCHEME_PROTOCOLS.has(protocol)
+}
+
+async function confirmUserDefinedURLScheme(protocol: string): Promise<boolean> {
+  const result = await dialog.showMessageBox({
+    type: "warning",
+    title: t("dialog.openExternalApp.title"),
+    message: t("dialog.openExternalApp.message", {
+      url: `${protocol}://`,
+      interpolation: { escapeValue: false },
+    }),
+    buttons: [t("dialog.open"), t("dialog.cancel")],
+    defaultId: 1,
+    cancelId: 1,
+  })
+
+  return result.response === 0
 }
 
 export class IntegrationService extends IpcService {
@@ -406,14 +431,9 @@ ${content}
 
     try {
       // Parse and validate the protocol up-front. `shell.openExternal` will
-      // happily dispatch any scheme the OS has registered a handler for,
-      // including `file://`, `smb://`, `ms-msdt:`, `search-ms:`, `jar:`,
-      // `res:`, etc. Several of those have well-documented exploit chains
-      // (NTLM credential theft over SMB, MSDT/Follina RCE on Windows,
-      // local-file disclosure via file://). The Electron docs explicitly
-      // warn against passing untrusted URLs to `shell.openExternal`, so we
-      // enforce a strict allowlist of schemes that the integrations UI is
-      // intended to support.
+      // happily dispatch any scheme the OS has registered a handler for. Keep
+      // known dangerous protocols blocked while allowing user-configured app
+      // schemes such as `logseq://` or `ulysses://`.
       let protocol: string
       try {
         protocol = new URL(scheme).protocol.replace(/:$/, "").toLowerCase()
@@ -425,10 +445,15 @@ ${content}
         throw new Error("Invalid URL scheme format. Must include protocol (e.g., 'app://')")
       }
 
-      if (!isAllowedURLSchemeProtocol(protocol)) {
-        throw new Error(
-          `URL scheme "${protocol}://" is not allowed. Allowed schemes: ${[...ALLOWED_URL_SCHEME_PROTOCOLS].sort().join(", ")}.`,
-        )
+      if (isDisallowedURLSchemeProtocol(protocol)) {
+        throw new Error(`URL scheme "${protocol}://" is not allowed.`)
+      }
+
+      if (
+        !BUILT_IN_URL_SCHEME_PROTOCOLS.has(protocol) &&
+        !(await confirmUserDefinedURLScheme(protocol))
+      ) {
+        throw new Error(`URL scheme "${protocol}://" was not opened.`)
       }
 
       // Log URL scheme execution (mask sensitive data)

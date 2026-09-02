@@ -6,6 +6,10 @@ type AuthCookieStorage = {
   setItem: (key: string, value: string) => unknown
 }
 
+type RemovableAuthCookieStorage = AuthCookieStorage & {
+  removeItem: (key: string) => unknown
+}
+
 type StoredCookie = Record<
   string,
   {
@@ -13,6 +17,36 @@ type StoredCookie = Record<
     value: string
   }
 >
+
+const parseStoredCookieSafely = (cookie: string | null | undefined): StoredCookie | null => {
+  if (!cookie) {
+    return {}
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(cookie)
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null
+    }
+
+    for (const value of Object.values(parsed)) {
+      if (
+        !value ||
+        typeof value !== "object" ||
+        !("value" in value) ||
+        typeof value.value !== "string" ||
+        !("expires" in value) ||
+        (value.expires !== null && typeof value.expires !== "string")
+      ) {
+        return null
+      }
+    }
+
+    return parsed as StoredCookie
+  } catch {
+    return null
+  }
+}
 
 const parseStoredCookie = (cookie: string | null | undefined): StoredCookie => {
   if (!cookie) {
@@ -25,6 +59,26 @@ const parseStoredCookie = (cookie: string | null | undefined): StoredCookie => {
   } catch {
     return {}
   }
+}
+
+const isSessionCookieName = (name: string) =>
+  name.includes("session_token") || name.includes("session_data")
+
+// Session responses routinely extend cookie expiry without changing the signed-in user.
+export const hasAuthSessionChanged = (
+  previousCookie: string | null | undefined,
+  nextCookie: string | null | undefined,
+) => {
+  const previous = parseStoredCookieSafely(previousCookie)
+  const next = parseStoredCookieSafely(nextCookie)
+  if (!previous || !next) {
+    return true
+  }
+
+  const sessionCookieNames = new Set(
+    [...Object.keys(previous), ...Object.keys(next)].filter(isSessionCookieName),
+  )
+  return Array.from(sessionCookieNames).some((name) => previous[name]?.value !== next[name]?.value)
 }
 
 const getCookieHeaderFromStoredCookie = (cookie: string) =>
@@ -112,6 +166,59 @@ const createCookieStorage = (storage: AuthCookieStorage) => ({
     await storage.setItem(key, `${chunkMarker}${count}`)
   },
 })
+
+export const createSessionAwareAuthCookieStorage = ({
+  cookieKey,
+  storage,
+  onSessionChange,
+}: {
+  cookieKey: string
+  storage: RemovableAuthCookieStorage
+  onSessionChange: () => void
+}): RemovableAuthCookieStorage => {
+  const normalizedCookieKey = normalizeCookieName(cookieKey)
+  const cookieStorage = createCookieStorage(storage)
+  let lastObservedCookie = cookieStorage.getItem(cookieKey)
+
+  return {
+    getItem(key) {
+      return storage.getItem(key)
+    },
+    async setItem(key, value) {
+      if (key !== normalizedCookieKey) {
+        await storage.setItem(key, value)
+        return
+      }
+
+      await storage.setItem(key, value)
+      if (value === "") {
+        return
+      }
+
+      const nextCookie = cookieStorage.getItem(cookieKey)
+      if (nextCookie === null || parseStoredCookieSafely(nextCookie) === null) {
+        return
+      }
+
+      const previousCookie = lastObservedCookie
+      lastObservedCookie = nextCookie
+      if (hasAuthSessionChanged(previousCookie, nextCookie)) {
+        onSessionChange()
+      }
+    },
+    async removeItem(key) {
+      await storage.removeItem(key)
+
+      if (key === normalizedCookieKey) {
+        const previousCookie = lastObservedCookie
+        lastObservedCookie = null
+        if (hasAuthSessionChanged(previousCookie, null)) {
+          onSessionChange()
+        }
+      }
+    },
+  }
+}
 
 const managedAuthCookieNames = new Set([
   "two_factor",
