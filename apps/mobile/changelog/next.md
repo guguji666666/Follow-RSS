@@ -2,10 +2,9 @@
 
 ## Shiny new things
 
-## Improvements
+- Unread timelines can now be sorted oldest first
 
 ## No longer broken
 
-## Thanks
-
-Special thanks to volunteer contributors @ for their valuable contributions
+- Fixed timeline position being lost when switching between views
+- Fixed settings header spacing around safe areas and improved action contrast
