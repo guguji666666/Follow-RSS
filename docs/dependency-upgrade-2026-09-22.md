@@ -17,7 +17,7 @@ Exact npm metadata, refs, raw diffs and focused source diffs are retained in `/t
 - TypeScript stays on 6.0.3: the real TypeScript 7.0.2 substitution fails in typescript-eslint because its package exports no JS compiler API. See the [executable compatibility investigation](dependency-upgrade-typescript-2026-09-22.md).
 - `@vercel/node` uses 12.0.1, the latest release with public source/changelog provenance. Version 13.0.1 has identical published runtime but an untraceable newer build-utils peer. See [source verification](dependency-upgrade-vercel-node-2026-09-22.md).
 
-- pnpm 12.5.1 migrates `.npmrc` layout policy into workspace settings, replaces `onlyBuiltDependencies` with `allowBuilds`, removes the obsolete `ignorePatchFailures: false` flag, and renames mobile CI overrides to `pnpm_config_*`. Frozen installation and graph checks are recorded in [the package-manager audit](dependency-upgrade-pnpm-2026-09-22.md).
+- pnpm 12.5.1 migrates `.npmrc` layout policy into workspace settings, replaces `onlyBuiltDependencies` with `allowBuilds`, removes the obsolete `ignorePatchFailures: false` flag, and preserves one consistent hoisted dependency layout throughout mobile CI (see the post-publication configuration fix in the package-manager audit). Frozen installation and graph checks are recorded in [the package-manager audit](dependency-upgrade-pnpm-2026-09-22.md).
 
 ## Required adaptations
 
