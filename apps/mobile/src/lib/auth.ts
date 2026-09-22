@@ -1,4 +1,4 @@
-import { expoClient } from "@better-auth/expo/client"
+import { expoClient, storageAdapter } from "@better-auth/expo/client"
 import type { BaseAuthPlugins } from "@follow/shared/auth"
 import { baseAuthPlugins } from "@follow/shared/auth"
 import { isNewUserQueryKey } from "@follow/store/user/constants"
@@ -122,11 +122,19 @@ const authCookieStorage = createSessionAwareAuthCookieStorage({
   },
 })
 
+// Share Better Auth's write queue and recoverable UTF-8 chunk storage with its
+// Expo plugin so a two-factor cookie update cannot race a session refresh.
+const expoCookieStorage = storageAdapter(authCookieStorage)
+
 const plugins = [
   ...baseAuthPlugins,
   createMobileAuthCookieSyncPlugin({
     cookieKey,
     storage: authCookieStorage,
+    cookieStorage: {
+      getItem: expoCookieStorage.getItem,
+      setItem: expoCookieStorage.setItemAsync,
+    },
   }),
   expoClient({
     scheme: "folo",

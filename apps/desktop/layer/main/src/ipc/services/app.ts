@@ -145,7 +145,7 @@ export class AppService extends IpcService {
   }
 
   @IpcMethod()
-  readClipboard(): string {
+  readClipboard(): Promise<string> {
     return clipboard.readText()
   }
 
@@ -240,8 +240,7 @@ export class AppService extends IpcService {
 
   @IpcMethod()
   readyToShowMainWindow() {
-    const shouldShowWindow =
-      !app.getLoginItemSettings().wasOpenedAsHidden && !process.argv.includes(START_IN_TRAY_ARGS)
+    const shouldShowWindow = !process.argv.includes(START_IN_TRAY_ARGS)
     if (shouldShowWindow) {
       const window = WindowManager.getMainWindow()
       if (window) window.show()

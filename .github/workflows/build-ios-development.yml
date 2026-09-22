@@ -65,8 +65,8 @@ jobs:
           EAS_NO_FROZEN_LOCKFILE: "1"
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
           CI: true
-          npm_config_node_linker: isolated
-          npm_config_shamefully_hoist: "false"
+          pnpm_config_node_linker: isolated
+          pnpm_config_shamefully_hoist: "false"
 
       # Optional: Upload artifact
       - name: 📤 Upload IPA
@@ -122,8 +122,8 @@ jobs:
           EAS_NO_FROZEN_LOCKFILE: "1"
           CI: true
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
-          npm_config_node_linker: isolated
-          npm_config_shamefully_hoist: "false"
+          pnpm_config_node_linker: isolated
+          pnpm_config_shamefully_hoist: "false"
       # Optional: Upload artifact
       - name: 📤 Upload IPA
         uses: actions/upload-artifact@v7
@@ -173,8 +173,8 @@ jobs:
           EAS_NO_FROZEN_LOCKFILE: "1"
           CI: true
           SENTRY_AUTH_TOKEN: ${{ secrets.RN_SENTRY_AUTH_TOKEN }}
-          npm_config_node_linker: isolated
-          npm_config_shamefully_hoist: "false"
+          pnpm_config_node_linker: isolated
+          pnpm_config_shamefully_hoist: "false"
       # Optional: Upload artifact
       - name: 📤 Upload IPA
         uses: actions/upload-artifact@v7

@@ -22,6 +22,7 @@ ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] =
 platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 
 prepare_react_native_project!
+$RNFirebaseDisableSPM = true
 
 target 'Folo' do
   use_expo_modules!
